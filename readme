@@ -1,3 +1,6 @@
 Look through dns logs
 
 origin,rule_name,src,dst,proto,service,action
+
+**todo**
+figure out how to write a __hash__ and == override 

@@ -3,7 +3,7 @@
 import requests
 import csv
 import sys
-import dnsconn
+from dnsconn import dnsconn
 
 
 """
@@ -23,9 +23,31 @@ def main():
     with open(file1) as csvfile:
         reader = csv.reader(csvfile, delimiter=',', quotechar='|')
         for row in reader:
-            print(row[0])
+            pass
+            #print(row[0])
 
+    connections = set()
+    conn1 = dnsconn("172.31.124.18", "catch1", "10.9.52.197", "204.135.52.19", "17", "53", "Accept")
+    conn2 = dnsconn("172.31.124.18", "catch1", "10.9.52.197", "204.135.52.19", "17", "53", "Accept")
+    conn3 = dnsconn("172.31.124.18", "catch1", "10.9.52.19", "204.135.52.1", "17", "53", "Accept")
 
+    connections.add(conn1)
+    connections.add(conn2)
+    connections.add(conn3)
+
+    print(type(connections))
+    print(type(conn1))
+
+    print("----------------------------")
+    print(connections)
+    """
+    if(conn1 == conn2):
+        print("equal")
+    else:
+        print("not")
+    """
+    print("end")
+#end of main
 
 if __name__ == "__main__":
     main()

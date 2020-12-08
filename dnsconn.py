@@ -62,4 +62,14 @@ class dnsconn(object):
     def get_action(self):
         return(self.action)
 
+    #operators
+    
+    def __eq__(self, other):
+        if(self.origin == other.origin):
+            return(True)
+        else:
+            return(False)
+    
+    def __hash__(self):
+        return(hash(self.origin, self.rule_name, self.src, self.dst, self.proto, self.service, self.action))
 #end of class
