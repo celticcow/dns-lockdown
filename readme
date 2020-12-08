@@ -1,0 +1,3 @@
+Look through dns logs
+
+origin,rule_name,src,dst,proto,service,action
