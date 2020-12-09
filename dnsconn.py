@@ -65,11 +65,11 @@ class dnsconn(object):
     #operators
     
     def __eq__(self, other):
-        if(self.origin == other.origin):
+        if((self.origin == other.origin) and (self.rule_name == other.rule_name) and (self.src == other.src) and (self.dst == other.dst) and (self.proto == other.proto) and (self.service == other.service) and (self.action == other.action)):
             return(True)
         else:
             return(False)
     
     def __hash__(self):
-        return(hash(self.origin, self.rule_name, self.src, self.dst, self.proto, self.service, self.action))
+        return(hash((self.origin, self.rule_name, self.src, self.dst, self.proto, self.service, self.action)))
 #end of class

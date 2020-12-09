@@ -40,12 +40,12 @@ def main():
 
     print("----------------------------")
     print(connections)
-    """
-    if(conn1 == conn2):
+    
+    if(conn1 == conn1):
         print("equal")
     else:
         print("not")
-    """
+    
     print("end")
 #end of main
 
