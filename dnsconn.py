@@ -18,6 +18,11 @@ class dnsconn(object):
         self.service = service
         self.action = action
 
+        if(origin == "127.0.0.1"):
+            self.count = 0
+        else:
+            self.count = 1
+
     #modifiers
     def set_origin(self, origin):
         self.origin = origin
@@ -39,6 +44,9 @@ class dnsconn(object):
     
     def set_action(self, action):
         self.action = action
+    
+    def increment(self):
+        self.count = self.count + 1
 
     #accessors
     def get_origin(self):
@@ -62,6 +70,9 @@ class dnsconn(object):
     def get_action(self):
         return(self.action)
 
+    def get_count(self):
+        return(self.count)
+        
     #operators
     
     def __eq__(self, other):
