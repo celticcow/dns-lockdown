@@ -3,6 +3,7 @@
 import requests
 import csv
 import sys
+from collections import Counter
 from dnsconn import dnsconn
 
 
@@ -17,51 +18,55 @@ wtc2fl : 172.31.104.14/.15
 
 def main():
     print("start of main")
+    debug = 0
 
     file1 = "file1.csv"
 
+    ## bulk list .. lot of dups
     dns_conn_list = list()
 
     with open(file1) as csvfile:
         reader = csv.reader(csvfile, delimiter=',', quotechar='|')
         for row in reader:
             tmp = dnsconn(row[0], row[1], row[2], row[3], row[4], row[5], row[6])
+            dns_conn_list.append(tmp)
+    #end of read file in
 
-            if(len(dns_conn_list) == 0):
-                #first time in ... for loop will be going against 0
-                dns_conn_list.append(tmp)
-            else:
-                for i in range(len(dns_conn_list)):
-                    if(dns_conn_list[i] == tmp):
-                        dns_conn_list[i].increment()
-                    else:
-                        dns_conn_list.append(tmp)
-            #print(row[0])
+    if(debug == 1):
+        print("**************************")
+        print(len(dns_conn_list))
+        ##print(Counter(dns_conn_list).keys())
+        print(Counter(dns_conn_list).values())
+        print("\n\n")
+        print(len(Counter(dns_conn_list).keys()))
+        print("--------------------------")
+        ##print(my_counter)
+    my_counter = Counter(dns_conn_list)
 
-    print("**************************")
-    print(len(dns_conn_list))
-    print("--------------------------")
-    """
-    connections = set()
-    conn1 = dnsconn("172.31.124.18", "catch1", "10.9.52.197", "204.135.52.19", "17", "53", "Accept")
-    conn2 = dnsconn("172.31.124.18", "catch1", "10.9.52.197", "204.135.52.19", "17", "53", "Accept")
-    conn3 = dnsconn("172.31.124.18", "catch1", "10.9.52.19", "204.135.52.1", "17", "53", "Accept")
+    uniq_conn = list()
+    count_keys = 0
 
-    connections.add(conn1)
-    connections.add(conn2)
-    connections.add(conn3)
+    for ele in my_counter:
+        my_tmp_conn = dnsconn(ele.get_origin(), ele.get_rule_name(), ele.get_src(), ele.get_dst(), ele.get_proto(), ele.get_service(), ele.get_action(), my_counter[ele])
 
-    print(type(connections))
-    print(type(conn1))
+        if(debug == 1):
+            print(ele.get_origin())
+            print(ele.get_rule_name())
+            print(ele.get_src())
+            print(ele.get_dst())
+            print(ele.get_proto())
+            print(ele.get_service())
+            print(ele.get_action())
+            print(my_counter[ele])
+            my_tmp_conn.conn_print()
 
-    print("----------------------------")
-    print(connections)
+        #print(ele.get_src() + " " + ele.get_dst())
+        #print(ele, my_counter[ele])
+        uniq_conn.append(my_tmp_conn)
+
+    print(len(uniq_conn))
+    uniq_conn[1001].conn_print()
     
-    if(conn1 == conn1):
-        print("equal")
-    else:
-        print("not")
-    """
 
     print("end")
 #end of main
