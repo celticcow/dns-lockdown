@@ -9,7 +9,7 @@ class dnsconn(object):
     origin | rule_name (direction) | src | dst | proto | service | action
     """
     #constructor
-    def __init__(self, origin="127.0.0.1", rule_name="null", src="127.0.0.1", dst="127.0.0.1", proto="1", service="0", action="null", count=0):
+    def __init__(self, origin="127.0.0.1", rule_name="null", src="127.0.0.1", dst="127.0.0.1", proto="1", service="0", action="null", count=0, msg="not_set"):
         self.origin = origin
         self.rule_name = rule_name
         self.src = src 
@@ -17,6 +17,8 @@ class dnsconn(object):
         self.proto = proto
         self.service = service
         self.action = action
+
+        self.msg = "not_set"
 
         if(origin == "127.0.0.1"):
             self.count = 0
@@ -50,6 +52,9 @@ class dnsconn(object):
     def increment(self):
         self.count = self.count + 1
 
+    def set_msg(self, msg):
+        self.msg = msg
+
     #accessors
     def get_origin(self):
         return(self.origin)
@@ -75,9 +80,13 @@ class dnsconn(object):
     def get_count(self):
         return(self.count)
 
+    def get_msg(self):
+        return(self.msg)
+
     def conn_print(self):
-        print(self.src + " -> " + self.dst + " : " + self.proto + "/" + self.service + " occured " + str(self.count), end="\n")
+        print(self.src + " -> " + self.dst + " : " + self.proto + "/" + self.service + " occured " + str(self.count) + " : " + self.msg, end="\n")
         
+    
     #operators
     
     def __eq__(self, other):

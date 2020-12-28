@@ -3,8 +3,11 @@
 import requests
 import csv
 import sys
+import socket
+import ipaddress
 from collections import Counter
 from dnsconn import dnsconn
+from dnspkt import SendDNSPkt
 
 
 """
@@ -16,11 +19,80 @@ wtc1fl : 172.31.124.18/.19
 wtc2fl : 172.31.104.14/.15
 """
 
+def is_fuzzy(conn):
+    """
+    some statics
+    199.82.243.70
+    146.18.173.70
+    """
+    ip_addr = conn.get_dst()
+    if(ip_addr == "199.82.243.70" or ip_addr == "146.18.173.70"):
+        conn.set_msg("outdated_dns server")
+        #print(" outdated_dns server ")
+        #return(False)
+    elif("192.82.243.70" in ip_addr):
+        conn.set_msg("misconfig dns")
+        #return(False)
+    elif("199.112.46" in ip_addr):
+        conn.set_msg("anycast set wrong")
+        #return(False)
+    elif("199.81.46" in ip_addr):
+        conn.set_msg("anycast set wrong")
+        #return(False)
+    elif("198.112.46" in ip_addr):
+        conn.set_msg("anycast set wrong")
+        #return(False)
+    elif("192.112.45.53" in ip_addr):
+        conn.set_msg("anycast set wrong")
+        #return(False)
+    elif("192.116.46.53" in ip_addr):
+        conn.set_msg("anycast set wrong")
+        #return(False)
+    elif("195.112.46.53" in ip_addr):
+        conn.set_msg("anycast set wrong")
+    elif("192.112." in ip_addr):
+        conn.set_msg("anycast set wrong?")
+    elif(ip_addr == "8.8.4.4" or ip_addr == "8.8.8.8"):
+        conn.set_msg("the googles")
+        #return(False)
+    elif(ip_addr == "10.74.4.20" or ip_addr == "10.76.4.20"):
+        conn.set_msg("PGH DNS Vip")
+    elif(ip_addr == "10.72.11.11"):
+        conn.set_msg("FXG dnshost.ground")
+    elif(ip_addr == "199.81.11.53"):
+        conn.set_msg("I2E dns vip")
+    else:
+        conn.set_msg("unknown dns")
+        #return(True)
+    try:
+        if(ipaddress.ip_address(ip_addr)):
+            pass
+            ##conn.set_msg("INVALID IP")
+    except:
+        conn.set_msg("INVALID IP")
+#end_of_is_fuzzy
+
+def checkDNSPortOpen(possible_dns):
+    # replace 8.8.8.8 with your server IP!
+    s = SendDNSPkt('loki.infosec.fedex.com', possible_dns)
+    portOpen = False
+    for _ in range(5): # udp is unreliable.Packet loss may occur
+        try:
+            s.sendPkt()
+            portOpen = True
+            break
+        except socket.timeout:
+            pass
+    if portOpen:
+        print('port open!')
+    else:
+        print('port closed!')
+
 def main():
     print("start of main")
     debug = 0
 
-    file1 = "file1.csv"
+    file1 = "file4.csv"
 
     ## bulk list .. lot of dups
     dns_conn_list = list()
@@ -65,7 +137,24 @@ def main():
         uniq_conn.append(my_tmp_conn)
 
     print(len(uniq_conn))
-    uniq_conn[1001].conn_print()
+    for i in range(len(uniq_conn)):
+        is_fuzzy(uniq_conn[i])
+        uniq_conn[i].conn_print()
+        if(uniq_conn[i].get_msg() == "unknown dns"):
+            ###
+            # is this a valid IP address
+            ###
+            tmp_dst = uniq_conn[i].get_dst()
+            if(ipaddress.ip_address(tmp_dst)):
+                checkDNSPortOpen(tmp_dst)
+            else:
+                "not a valid IP address"
+
+    ##uniq_conn[50].conn_print()
+    ##checkDNSPortOpen("8.8.3.8")
+    
+    ##uniq_conn[300].conn_print()
+    
     
 
     print("end")
