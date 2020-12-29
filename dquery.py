@@ -69,6 +69,7 @@ def is_fuzzy(conn):
             pass
             ##conn.set_msg("INVALID IP")
     except:
+        ## meta data or not a valid IP so do nothing
         conn.set_msg("INVALID IP")
 #end_of_is_fuzzy
 
@@ -83,10 +84,13 @@ def checkDNSPortOpen(possible_dns):
             break
         except socket.timeout:
             pass
-    if portOpen:
-        print('port open!')
-    else:
-        print('port closed!')
+    #if portOpen:
+        
+    #    print('port open!')
+    #else:
+    #    print('port closed!')
+    return(portOpen)
+#end of CheckDNSPortOpen
 
 def main():
     print("start of main")
@@ -137,19 +141,24 @@ def main():
         uniq_conn.append(my_tmp_conn)
 
     print(len(uniq_conn))
+    output = '/home/gdunlap/Code/python/dns-lockdown/results.txt'
+    outwrite = open(output, 'w')
+
     for i in range(len(uniq_conn)):
         is_fuzzy(uniq_conn[i])
         uniq_conn[i].conn_print()
         if(uniq_conn[i].get_msg() == "unknown dns"):
-            ###
-            # is this a valid IP address
-            ###
             tmp_dst = uniq_conn[i].get_dst()
-            if(ipaddress.ip_address(tmp_dst)):
-                checkDNSPortOpen(tmp_dst)
+            if(checkDNSPortOpen(tmp_dst)):
+                print("PORT OPEN")
+                outwrite.write(tmp_dst)
+                outwrite.write(" OPEN\n")
             else:
-                "not a valid IP address"
-
+                print("PORT CLOSED")
+                outwrite.write(tmp_dst)
+                outwrite.write(" Closed\n")
+    
+    outwrite.close()
     ##uniq_conn[50].conn_print()
     ##checkDNSPortOpen("8.8.3.8")
     
