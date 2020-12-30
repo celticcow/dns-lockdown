@@ -8,6 +8,8 @@ import ipaddress
 from collections import Counter
 from dnsconn import dnsconn
 from dnspkt import SendDNSPkt
+from zone import Zone
+from network import Network
 
 
 """
@@ -92,11 +94,66 @@ def checkDNSPortOpen(possible_dns):
     return(portOpen)
 #end of CheckDNSPortOpen
 
+def get_zone_list():
+    debug = 1
+    startZ = 1
+    csvindex = 0
+
+    list_of_zones = list()
+
+    ##build list from file
+    with open('zonedata.csv') as csvfile:
+        reader = csv.reader(csvfile, delimiter=',', quotechar='|')
+        for row in reader:
+            data = row[0]
+
+            if(startZ == 1):
+                #zone title
+                ztemp = Zone(data)
+                list_of_zones.append(ztemp)
+                startZ = 0
+            elif("Meta" in data):
+                list_of_zones[csvindex].set_meta(data)
+            elif("Policy" in data):
+                list_of_zones[csvindex].set_policy(data)
+            elif(data == "****"):
+                #end of zone section
+                startZ = 1
+                csvindex = csvindex + 1
+            else:
+                tmp_net = Network(data)
+                list_of_zones[csvindex].add_network(tmp_net)
+        #end of for row
+    #end of csv file
+
+    return(list_of_zones)
+#end of get_zone_list()
+
+def zone_out(ip_addr, list_of_zones):
+    debug = 1
+
+    result = "NotFound"
+
+    for z in list_of_zones:
+        if(z.compare(ip_addr)):
+            print("Match Found")
+            print(z.get_name())
+            result = z.get_name()
+            print("******************")
+
+    return(result)
+#end of zone_out
+
+
 def main():
     print("start of main")
     debug = 0
 
     file1 = "file4.csv"
+
+    list_of_zones = list()
+
+    list_of_zones = get_zone_list()
 
     ## bulk list .. lot of dups
     dns_conn_list = list()
@@ -152,13 +209,19 @@ def main():
             if(checkDNSPortOpen(tmp_dst)):
                 print("PORT OPEN")
                 outwrite.write(tmp_dst)
-                outwrite.write(" OPEN\n")
+                outwrite.write(" OPEN ")
             else:
                 print("PORT CLOSED")
                 outwrite.write(tmp_dst)
-                outwrite.write(" Closed\n")
+                outwrite.write(" Closed ")
+            
+            outwrite.write(zone_out(tmp_dst, list_of_zones))
+            outwrite.write('\n')
+
     
     outwrite.close()
+
+    zone_out("146.18.2.137", list_of_zones)
     ##uniq_conn[50].conn_print()
     ##checkDNSPortOpen("8.8.3.8")
     
