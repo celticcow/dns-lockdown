@@ -149,7 +149,7 @@ def main():
     print("start of main")
     debug = 0
 
-    file1 = "file4.csv"
+    file1 = "edc-catch2.csv"
 
     list_of_zones = list()
 
@@ -205,23 +205,32 @@ def main():
         is_fuzzy(uniq_conn[i])
         uniq_conn[i].conn_print()
         if(uniq_conn[i].get_msg() == "unknown dns"):
+            tmp_src = uniq_conn[i].get_src()
             tmp_dst = uniq_conn[i].get_dst()
+
             if(checkDNSPortOpen(tmp_dst)):
                 print("PORT OPEN")
+                outwrite.write(tmp_src)
+                outwrite.write(" -> ")
                 outwrite.write(tmp_dst)
                 outwrite.write(" OPEN ")
             else:
                 print("PORT CLOSED")
+                outwrite.write(tmp_src)
+                outwrite.write(" -> ")
                 outwrite.write(tmp_dst)
                 outwrite.write(" Closed ")
             
+            outwrite.write(" : ")
+            outwrite.write(zone_out(tmp_src, list_of_zones))
+            outwrite.write(" -> ")
             outwrite.write(zone_out(tmp_dst, list_of_zones))
             outwrite.write('\n')
 
     
     outwrite.close()
 
-    zone_out("146.18.2.137", list_of_zones)
+    ##zone_out("146.18.2.137", list_of_zones)
     ##uniq_conn[50].conn_print()
     ##checkDNSPortOpen("8.8.3.8")
     
