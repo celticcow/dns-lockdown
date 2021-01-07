@@ -149,7 +149,7 @@ def main():
     print("start of main")
     debug = 0
 
-    file1 = "edc-catch2.csv"
+    file1 = "edc-27.csv"
 
     list_of_zones = list()
 
@@ -201,6 +201,9 @@ def main():
     output = '/home/gdunlap/Code/python/dns-lockdown/results.txt'
     outwrite = open(output, 'w')
 
+    google_out = '/home/gdunlap/Code/python/dns-lockdown/google.txt'
+    gwrite = open(google_out, 'w')
+
     for i in range(len(uniq_conn)):
         is_fuzzy(uniq_conn[i])
         uniq_conn[i].conn_print()
@@ -226,9 +229,22 @@ def main():
             outwrite.write(" -> ")
             outwrite.write(zone_out(tmp_dst, list_of_zones))
             outwrite.write('\n')
+        elif(uniq_conn[i].get_msg() == "the googles"):
+            tmp_src = uniq_conn[i].get_src()
+            tmp_dst = uniq_conn[i].get_dst()
+            
+            gwrite.write(tmp_src)
+            gwrite.write(" -> ")
+            gwrite.write(tmp_dst)
+            gwrite.write(" : ")
+            gwrite.write(zone_out(tmp_src, list_of_zones))
+            gwrite.write(" -> ")
+            gwrite.write(zone_out(tmp_dst, list_of_zones))
+            gwrite.write('\n')
 
     
     outwrite.close()
+    gwrite.close()
 
     ##zone_out("146.18.2.137", list_of_zones)
     ##uniq_conn[50].conn_print()
