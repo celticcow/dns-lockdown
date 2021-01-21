@@ -11,6 +11,8 @@ from dnspkt import SendDNSPkt
 from zone import Zone
 from network import Network
 
+from cmdb_query import cmdb_query
+
 
 """
 Greg Dunlap / Celticcow
@@ -229,6 +231,30 @@ def main():
             outwrite.write(" -> ")
             outwrite.write(zone_out(tmp_dst, list_of_zones))
             outwrite.write('\n')
+
+            q1 = cmdb_query()
+            q2 = cmdb_query()
+
+            q1.set_ip(tmp_src)
+            q2.set_ip(tmp_dst)
+
+            q1.query_cmdb()
+            q2.query_cmdb()
+
+            print("**************************************")
+            print(q1.get_cmdb_info())
+            print(q2.get_cmdb_info())
+
+            outwrite.write(" *** CMDB ***\n")
+            outwrite.write(q1.get_cmdb_info())
+            outwrite.write("\n")
+            outwrite.write(q2.get_cmdb_info())
+            outwrite.write("\n *** END ***\n\n\n")
+            print("--------------------------------------")
+
+
+
+
         elif(uniq_conn[i].get_msg() == "the googles"):
             tmp_src = uniq_conn[i].get_src()
             tmp_dst = uniq_conn[i].get_dst()
@@ -241,6 +267,14 @@ def main():
             gwrite.write(" -> ")
             gwrite.write(zone_out(tmp_dst, list_of_zones))
             gwrite.write('\n')
+
+            q1 = cmdb_query()
+            q1.set_ip(tmp_src)
+            q1.query_cmdb()
+
+            gwrite.write("\n *** CMDB Source ***\n")
+            gwrite.write(q1.get_cmdb_info())
+            gwrite.write("\n *** END ***\n\n\n")
 
     
     outwrite.close()
