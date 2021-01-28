@@ -106,7 +106,10 @@ class cmdb_query(object):
             headers = {"Accept" : "application/json"}
 
             # Do the HTTP request
-            response = requests.get(url, auth=(key['usr'], key['pwd']), headers=headers, proxies=self.proxyDict)
+            try:
+                response = requests.get(url, auth=(key['usr'], key['pwd']), headers=headers, proxies=self.proxyDict)
+            except:
+                return()
 
             ####
             if(response.status_code != 200):

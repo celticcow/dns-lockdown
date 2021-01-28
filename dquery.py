@@ -151,7 +151,7 @@ def main():
     print("start of main")
     debug = 0
 
-    file1 = "edc-27.csv"
+    file1 = "edc-2nd-28.csv"
 
     list_of_zones = list()
 
