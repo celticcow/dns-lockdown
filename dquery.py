@@ -151,7 +151,8 @@ def main():
     print("start of main")
     debug = 0
 
-    file1 = "edc-2nd-28.csv"
+    #file1 = "edc-dns0203-2-7d.csv"
+    file1 = sys.argv[1]
 
     list_of_zones = list()
 
@@ -209,17 +210,21 @@ def main():
     for i in range(len(uniq_conn)):
         is_fuzzy(uniq_conn[i])
         uniq_conn[i].conn_print()
+        to_search = 0
+
         if(uniq_conn[i].get_msg() == "unknown dns"):
             tmp_src = uniq_conn[i].get_src()
             tmp_dst = uniq_conn[i].get_dst()
 
             if(checkDNSPortOpen(tmp_dst)):
+                to_search = 1
                 print("PORT OPEN")
                 outwrite.write(tmp_src)
                 outwrite.write(" -> ")
                 outwrite.write(tmp_dst)
                 outwrite.write(" OPEN ")
             else:
+                to_search = 0
                 print("PORT CLOSED")
                 outwrite.write(tmp_src)
                 outwrite.write(" -> ")
@@ -232,28 +237,27 @@ def main():
             outwrite.write(zone_out(tmp_dst, list_of_zones))
             outwrite.write('\n')
 
-            q1 = cmdb_query()
-            q2 = cmdb_query()
+            if(to_search == 1):
+                q1 = cmdb_query()
+                q2 = cmdb_query()
 
-            q1.set_ip(tmp_src)
-            q2.set_ip(tmp_dst)
+                q1.set_ip(tmp_src)
+                q2.set_ip(tmp_dst)
 
-            q1.query_cmdb()
-            q2.query_cmdb()
+                q1.query_cmdb()
+                q2.query_cmdb()
 
-            print("**************************************")
-            print(q1.get_cmdb_info())
-            print(q2.get_cmdb_info())
+                print("**************************************")
+                print(q1.get_cmdb_info())
+                print(q2.get_cmdb_info())
 
-            outwrite.write(" *** CMDB ***\n")
-            outwrite.write(q1.get_cmdb_info())
-            outwrite.write("\n")
-            outwrite.write(q2.get_cmdb_info())
-            outwrite.write("\n *** END ***\n\n\n")
-            print("--------------------------------------")
-
-
-
+                outwrite.write(" *** CMDB ***\n")
+                outwrite.write(q1.get_cmdb_info())
+                outwrite.write("\n")
+                outwrite.write(q2.get_cmdb_info())
+                outwrite.write("\n *** END ***\n\n\n")
+                print("--------------------------------------")
+                
 
         elif(uniq_conn[i].get_msg() == "the googles"):
             tmp_src = uniq_conn[i].get_src()
@@ -267,7 +271,7 @@ def main():
             gwrite.write(" -> ")
             gwrite.write(zone_out(tmp_dst, list_of_zones))
             gwrite.write('\n')
-
+            
             q1 = cmdb_query()
             q1.set_ip(tmp_src)
             q1.query_cmdb()
@@ -275,18 +279,11 @@ def main():
             gwrite.write("\n *** CMDB Source ***\n")
             gwrite.write(q1.get_cmdb_info())
             gwrite.write("\n *** END ***\n\n\n")
+            
 
     
     outwrite.close()
     gwrite.close()
-
-    ##zone_out("146.18.2.137", list_of_zones)
-    ##uniq_conn[50].conn_print()
-    ##checkDNSPortOpen("8.8.3.8")
-    
-    ##uniq_conn[300].conn_print()
-    
-    
 
     print("end")
 #end of main
