@@ -107,7 +107,7 @@ class cmdb_query(object):
 
             # Do the HTTP request
             try:
-                response = requests.get(url, auth=(key['usr'], key['pwd']), headers=headers, proxies=self.proxyDict)
+                response = requests.get(url, auth=(key['usr'], key['pwd']), headers=headers, proxies=self.proxyDict, timeout=0.5)
             except:
                 return()
 
