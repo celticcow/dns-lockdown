@@ -4,6 +4,7 @@ import requests
 import csv
 import sys
 import socket
+import argparse
 import ipaddress
 from collections import Counter
 from dnsconn import dnsconn
@@ -152,7 +153,16 @@ def main():
     debug = 0
 
     #file1 = "edc-dns0203-2-7d.csv"
-    file1 = sys.argv[1]
+    parser = argparse.ArgumentParser(description='dns search')
+
+    parser.add_argument("-f", required=True, help="file to import")
+    parser.add_argument("-o", required=False, help="only show open conn results")
+
+    args = parser.parse_args()
+
+    #file1 = sys.argv[1]
+
+    file1 = args.f
 
     list_of_zones = list()
 
@@ -201,10 +211,10 @@ def main():
         uniq_conn.append(my_tmp_conn)
 
     print(len(uniq_conn))
-    output = '/home/gdunlap/Code/python/dns-lockdown/results.txt'
+    output = './results.txt'
     outwrite = open(output, 'w')
 
-    google_out = '/home/gdunlap/Code/python/dns-lockdown/google.txt'
+    google_out = './google.txt'
     gwrite = open(google_out, 'w')
 
     for i in range(len(uniq_conn)):
@@ -225,17 +235,23 @@ def main():
                 outwrite.write(" OPEN ")
             else:
                 to_search = 0
-                print("PORT CLOSED")
-                outwrite.write(tmp_src)
-                outwrite.write(" -> ")
-                outwrite.write(tmp_dst)
-                outwrite.write(" Closed ")
+                if(args.o == 'y'):
+                    pass
+                else:
+                    print("PORT CLOSED")
+                    outwrite.write(tmp_src)
+                    outwrite.write(" -> ")
+                    outwrite.write(tmp_dst)
+                    outwrite.write(" Closed ")
             
-            outwrite.write(" : ")
-            outwrite.write(zone_out(tmp_src, list_of_zones))
-            outwrite.write(" -> ")
-            outwrite.write(zone_out(tmp_dst, list_of_zones))
-            outwrite.write('\n')
+            if(args.o == 'y'):
+                pass
+            else:
+                outwrite.write(" : ")
+                outwrite.write(zone_out(tmp_src, list_of_zones))
+                outwrite.write(" -> ")
+                outwrite.write(zone_out(tmp_dst, list_of_zones))
+                outwrite.write('\n')
 
             if(to_search == 1):
                 q1 = cmdb_query()
